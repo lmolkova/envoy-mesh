@@ -1,0 +1,158 @@
+version: "2"
+services:
+  service-b:
+    image: gcrio.azureedge.net/google_containers/pause-amd64:3.0
+  service-b-1:
+    depends_on:
+    - service-b
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-b-1-envoy:
+    depends_on:
+    - service-b-1
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-b-1.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-b-1
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-b-1-impl:
+    depends_on:
+    - service-b-1-envoy
+    image: stephpr/service-b:1
+    network_mode: service:service-b-1
+  service-b-2:
+    depends_on:
+    - service-b-1
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-b-2-envoy:
+    depends_on:
+    - service-b-2
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-b-2.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-b-2
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-b-2-impl:
+    depends_on:
+    - service-b-2-envoy
+    image: stephpr/service-b:2
+    network_mode: service:service-b-2
+  service-b-3:
+    depends_on:
+    - service-b-2
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-b-3-envoy:
+    depends_on:
+    - service-b-3
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-b-3.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-b-3
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-b-3-impl:
+    depends_on:
+    - service-b-3-envoy
+    image: stephpr/service-b:3
+    network_mode: service:service-b-3
+  service-a:
+    depends_on:
+    - service-b-3-impl
+    image: gcrio.azureedge.net/google_containers/pause-amd64:3.0
+  service-a-1:
+    depends_on:
+    - service-a
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-a-1-envoy:
+    depends_on:
+    - service-a-1
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-a-1.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-a-1
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-a-1-impl:
+    depends_on:
+    - service-a-1-envoy
+    image: stephpr/service-a:1
+    network_mode: service:service-a-1
+  service-a-2:
+    depends_on:
+    - service-a-1
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-a-2-envoy:
+    depends_on:
+    - service-a-2
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-a-2.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-a-2
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-a-2-impl:
+    depends_on:
+    - service-a-2-envoy
+    image: stephpr/service-a:2
+    network_mode: service:service-a-2
+  service-a-3:
+    depends_on:
+    - service-a-2
+    image: service-host
+    cap_add:
+    - NET_ADMIN
+  service-a-3-envoy:
+    depends_on:
+    - service-a-3
+    image: lyft/envoy-alpine
+    volumes:
+    - ./service-a-3.envoy.json:/etc/envoy/envoy.json
+    network_mode: service:service-a-3
+    user: "1337"
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json
+  service-a-3-impl:
+    depends_on:
+    - service-a-3-envoy
+    image: stephpr/service-a:3
+    network_mode: service:service-a-3
+  ingress:
+    depends_on:
+    - service-a-3-impl
+    image: lyft/envoy-alpine
+    volumes:
+    - ./ingress.envoy.json:/etc/envoy/envoy.json
+    ports:
+    - 8080:80
+    command:
+    - envoy
+    - -c
+    - /etc/envoy/envoy.json

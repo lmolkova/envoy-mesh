@@ -1,0 +1,302 @@
+{
+    "admin": {
+        "address": "tcp://0.0.0.0:15000",
+        "access_log_path": "/dev/stdout"
+    },
+    "listeners": [
+        {
+            "address": "tcp://172.18.0.2:80",
+            "bind_to_port": false,
+            "filters": [
+                {
+                    "type": "read",
+                    "name": "http_connection_manager",
+                    "config": {
+                        "codec_type": "auto",
+                        "stat_prefix": "http",
+                        "route_config": {
+                            "virtual_hosts": [
+                                {
+                                    "name": "service-b|80",
+                                    "domains": [
+                                        "service-b"
+                                    ],
+                                    "routes": [
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "stephpr"
+                                                }
+                                            ],
+                                            "cluster": "out.service-b-3.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "staged-stephpr"
+                                                }
+                                            ],
+                                            "cluster": "out.service-b-2.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "default"
+                                                }
+                                            ],
+                                            "cluster": "out.service-b-1.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "weighted_clusters": {
+                                                "clusters": [
+                                                    {
+                                                        "name": "out.service-b-1.80",
+                                                        "weight": 50
+                                                    },
+                                                    {
+                                                        "name": "out.service-b-2.80",
+                                                        "weight": 50
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "filters": [
+                            {
+                                "type": "decoder",
+                                "name": "router",
+                                "config": {}
+                            }
+                        ],
+                        "access_log": [
+                            {
+                                "path": "/dev/stdout"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "address": "tcp://172.18.0.3:80",
+            "bind_to_port": false,
+            "filters": [
+                {
+                    "type": "read",
+                    "name": "http_connection_manager",
+                    "config": {
+                        "codec_type": "auto",
+                        "stat_prefix": "http",
+                        "route_config": {
+                            "virtual_hosts": [
+                                {
+                                    "name": "inbound|80",
+                                    "domains": [
+                                        "*"
+                                    ],
+                                    "routes": [
+                                        {
+                                            "prefix": "/",
+                                            "cluster": "in.80"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "filters": [
+                            {
+                                "type": "decoder",
+                                "name": "router",
+                                "config": {}
+                            }
+                        ],
+                        "access_log": [
+                            {
+                                "path": "/dev/stdout"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "address": "tcp://172.18.0.6:80",
+            "bind_to_port": false,
+            "filters": [
+                {
+                    "type": "read",
+                    "name": "http_connection_manager",
+                    "config": {
+                        "codec_type": "auto",
+                        "stat_prefix": "http",
+                        "route_config": {
+                            "virtual_hosts": [
+                                {
+                                    "name": "service-a|80",
+                                    "domains": [
+                                        "service-a"
+                                    ],
+                                    "routes": [
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "johnsta"
+                                                }
+                                            ],
+                                            "cluster": "out.service-a-3.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "staged-johnsta"
+                                                }
+                                            ],
+                                            "cluster": "out.service-a-2.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "headers": [
+                                                {
+                                                    "name": "x-scope",
+                                                    "value": "default"
+                                                }
+                                            ],
+                                            "cluster": "out.service-a-1.80"
+                                        },
+                                        {
+                                            "prefix": "/",
+                                            "weighted_clusters": {
+                                                "clusters": [
+                                                    {
+                                                        "name": "out.service-a-1.80",
+                                                        "weight": 50
+                                                    },
+                                                    {
+                                                        "name": "out.service-a-2.80",
+                                                        "weight": 50
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "filters": [
+                            {
+                                "type": "decoder",
+                                "name": "router",
+                                "config": {}
+                            }
+                        ],
+                        "access_log": [
+                            {
+                                "path": "/dev/stdout"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "address": "tcp://0.0.0.0:15001",
+            "use_original_dst": true,
+            "filters": []
+        }
+    ],
+    "cluster_manager": {
+        "clusters": [
+            {
+                "name": "in.80",
+                "type": "static",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://127.0.0.1:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-a-1.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-a-1:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-a-2.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-a-2:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-a-3.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-a-3:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-b-1.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-b-1:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-b-2.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-b-2:80"
+                    }
+                ]
+            },
+            {
+                "name": "out.service-b-3.80",
+                "type": "logical_dns",
+                "lb_type": "round_robin",
+                "connect_timeout_ms": 1000,
+                "hosts": [
+                    {
+                        "url": "tcp://service-b-3:80"
+                    }
+                ]
+            }
+        ]
+    }
+}
