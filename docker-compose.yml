@@ -5,6 +5,7 @@ services:
   service-b-1:
     depends_on:
     - service-b
+    build: .
     image: service-host
     cap_add:
     - NET_ADMIN
