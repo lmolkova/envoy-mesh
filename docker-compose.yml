@@ -12,7 +12,7 @@ services:
   service-b-1-envoy:
     depends_on:
     - service-b-1
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-b-1.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-b-1
@@ -21,11 +21,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-b-1
+    - --service-node service-b-1
+    labels:
+    - service-name=service-b-1-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-b-1-impl:
     depends_on:
     - service-b-1-envoy
     image: stephpr/service-b:1
     network_mode: service:service-b-1
+    labels:
+    - service-name=service-b-1
+    - service-version=1.0
   service-b-2:
     depends_on:
     - service-b-1
@@ -35,7 +43,7 @@ services:
   service-b-2-envoy:
     depends_on:
     - service-b-2
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-b-2.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-b-2
@@ -44,11 +52,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-b-2
+    - --service-node service-b-2
+    labels:
+    - service-name=service-b-2-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-b-2-impl:
     depends_on:
     - service-b-2-envoy
     image: stephpr/service-b:2
     network_mode: service:service-b-2
+    labels:
+    - service-name=service-b-2
+    - service-version=1.0
   service-b-3:
     depends_on:
     - service-b-2
@@ -58,7 +74,7 @@ services:
   service-b-3-envoy:
     depends_on:
     - service-b-3
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-b-3.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-b-3
@@ -67,11 +83,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-b-3
+    - --service-node service-b-3
+    labels:
+    - service-name=service-b-3-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-b-3-impl:
     depends_on:
     - service-b-3-envoy
     image: stephpr/service-b:3
     network_mode: service:service-b-3
+    labels:
+    - service-name=service-b-3
+    - service-version=1.0
   service-a:
     depends_on:
     - service-b-3-impl
@@ -85,7 +109,7 @@ services:
   service-a-1-envoy:
     depends_on:
     - service-a-1
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-a-1.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-a-1
@@ -94,11 +118,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-a-1
+    - --service-node service-a-1
+    labels:
+    - service-name=service-a-1-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-a-1-impl:
     depends_on:
     - service-a-1-envoy
     image: stephpr/service-a:1
     network_mode: service:service-a-1
+    labels:
+    - service-name=service-a-1
+    - service-version=1.0
   service-a-2:
     depends_on:
     - service-a-1
@@ -108,7 +140,7 @@ services:
   service-a-2-envoy:
     depends_on:
     - service-a-2
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-a-2.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-a-2
@@ -117,11 +149,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-a-2
+    - --service-node service-a-2
+    labels:
+    - service-name=service-a-2-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-a-2-impl:
     depends_on:
     - service-a-2-envoy
     image: stephpr/service-a:2
     network_mode: service:service-a-2
+    labels:
+    - service-name=service-a-2
+    - service-version=1.0
   service-a-3:
     depends_on:
     - service-a-2
@@ -131,7 +171,7 @@ services:
   service-a-3-envoy:
     depends_on:
     - service-a-3
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./service-a-3.envoy.json:/etc/envoy/envoy.json
     network_mode: service:service-a-3
@@ -140,15 +180,23 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster service-a-3
+    - --service-node service-a-3
+    labels:
+    - service-name=service-a-3-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
   service-a-3-impl:
     depends_on:
     - service-a-3-envoy
     image: stephpr/service-a:3
     network_mode: service:service-a-3
+    labels:
+    - service-name=service-a-3
+    - service-version=1.0
   ingress:
     depends_on:
     - service-a-3-impl
-    image: lyft/envoy-alpine
+    image: lyft/envoy-alpine:e78a2711f406ba83848b00bfea35db201c9a9177
     volumes:
     - ./ingress.envoy.json:/etc/envoy/envoy.json
     ports:
@@ -157,3 +205,19 @@ services:
     - envoy
     - -c
     - /etc/envoy/envoy.json
+    - --service-cluster ingress
+    - --service-node ingress
+    labels:
+    - service-name=ingress-envoy
+    - service-version=e78a2711f406ba83848b00bfea35db201c9a9177
+  azp-diagnostics:
+    image: mindarostage/diagnostics_agent
+    depends_on:
+    - ingress
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+    - diagnostics_agent
+    environment:
+    - APPINSIGHTS_INSTRUMENTATIONKEY=1234
+    #- ZIPKIN_LOG_LEVEL=3
